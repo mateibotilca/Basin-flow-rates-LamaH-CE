@@ -1,0 +1,55 @@
+# CP1 configuration: which LamaH-CE basins enter the twin and which inputs are read.
+# Selection rationale (filters applied to all 882 gauges, see README):
+#   country = AUT; degimpact in {u, l}; daily record 1981 -> present; gaps_post <= 1 permille;
+#   >= 1 upstream gauge with an equally good record; upstream gauges cover 30-90 % of the area;
+#   150 km2 <= area_gov <= 5000 km2.
+
+# Absolute path to your local, unzipped LamaH-CE folder (the one that contains
+# A_basins_total_upstrm, D_gauges, ...). Use forward slashes, also on Windows.
+lamah_root: "/Users/mateibotilca/Documents/SIVA/Anul2/2.1/IC3/LamaH-CE"
+
+period:
+  start: "1981-01-01"
+  end: "2017-12-31"
+
+# Meteorological forcings (ERA5-Land, aggregated over the full upstream area,
+# basin delineation A). Names must match the file header exactly; the inspect
+# step prints the available names if one is missing.
+meteo_vars:
+  - prec           # precipitation sum [mm/d]
+  - 2m_temp_mean   # air temperature [degC]
+  - 2m_temp_min
+  - 2m_temp_max
+  - swe            # snow water equivalent [mm]
+  - volsw_123      # topsoil water content 0-100 cm [m3/m3]
+
+basins:
+  - id: 533
+    name: "Isel at Bruehl"
+    regime: "alpine (nival-glacial)"
+    upstream: [530, 532]
+  - id: 332
+    name: "Traisen at Windpassing"
+    regime: "hill (pluvio-nival)"
+    upstream: [328, 331]
+  - id: 195
+    name: "Aschach at Kropfmuehle"
+    regime: "lowland (pluvial)"
+    upstream: [193, 194]
+
+# Reserve basin (swap in by moving it into `basins`):
+#  - id: 569
+#    name: "Gail at Noetsch"
+#    regime: "mountain (nivo-pluvial)"
+#    upstream: [567, 568]
+
+# Exceedance threshold used for the descriptive event statistics of the data card.
+# NOTE: the modelling threshold is re-computed on training years only (CP2),
+# otherwise information from the test years leaks into the alert threshold.
+event_quantile: 0.99
+# Days above the threshold separated by <= this many days are merged into one event.
+event_merge_gap_days: 3
+
+output:
+  processed_dir: "data/processed"
+  results_dir: "results/cp1"

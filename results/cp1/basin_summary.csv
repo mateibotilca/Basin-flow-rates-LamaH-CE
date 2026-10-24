@@ -1,0 +1,4 @@
+basin_id,name,regime,river,area_gov_km2,elev_mean_m,glac_fra,frac_snow,hfd_mean_days,degimpact,upstream_ids,upstream_area_share,record_start,record_end,n_days_valid,pct_missing_target,q_mean_m3s,q99_m3s,q_max_m3s,n_events,events_per_year,pct_events_MJJA,discharge_column_in_file
+533,Isel at Bruehl,alpine (nival-glacial),Isel,518.4,2259.0,0.076,0.47,271.278,l,"530,532",0.666,1981-01-01,2017-12-31,13514,0.0,20.509,86.32,286.96,70,1.89,98.6,qobs
+332,Traisen at Windpassing,hill (pluvio-nival),Traisen,733.3,695.0,0.0,0.15,185.111,l,"328,331",0.759,1981-01-01,2017-12-31,13514,0.0,14.23,64.91,420.54,66,1.78,37.9,qobs
+195,Aschach at Kropfmuehle,lowland (pluvial),Aschach,312.2,434.0,0.0,0.06,151.972,l,"193,194",0.481,1981-01-01,2017-12-31,13514,0.0,4.239,36.06,167.6,86,2.32,17.4,qobs

@@ -1,0 +1,14 @@
+# data never goes into git (LamaH-CE is ~5 GB; processed tables are regenerated)
+data/
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
