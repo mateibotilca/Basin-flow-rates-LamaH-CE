@@ -1,5 +1,5 @@
 # data never goes into git (LamaH-CE is ~5 GB; processed tables are regenerated)
-data/
+/data/
 *.zip
 
 # Python
