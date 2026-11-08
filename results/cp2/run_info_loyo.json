@@ -1,0 +1,24 @@
+{
+  "mode": "loyo",
+  "git_commit": "5dd9979d7ff7297759a982fc36f5cb3283d5d3af",
+  "git_dirty": true,
+  "packages": {
+    "python": "3.10.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "matplotlib": "3.10.9",
+    "pyyaml": "6.0.3",
+    "platform": "macOS-26.6.2-arm64-arm-64bit"
+  },
+  "representation": "A_engineered",
+  "seed": 0,
+  "runtime_s": {
+    "features": 0.06,
+    "baselines": 0.0,
+    "rf_A_engineered": 272.36,
+    "blocked_total": 41.6,
+    "loyo_total": 231.17,
+    "total": 273.07
+  }
+}

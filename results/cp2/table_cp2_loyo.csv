@@ -1,0 +1,19 @@
+basin_id,model,representation,label,seed,folds,n_folds,n_days,NSE,NSE_lo,NSE_hi,CSI_Q95,CSI_Q95_lo,CSI_Q95_hi,CSI_Q99,CSI_Q99_lo,CSI_Q99_hi
+195,climatology,none,Climatology,,blocked,6,10592,0.0621,0.0437,0.0824,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+195,climatology,none,Climatology,,loyo,29,10592,0.0623,0.0444,0.0821,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+195,persistence,none,Persistence,,blocked,6,10592,-0.1799,-0.3316,-0.0069,0.2051,0.1646,0.2448,0.0667,0.0110,0.1282
+195,persistence,none,Persistence,,loyo,29,10592,-0.1799,-0.3316,-0.0069,0.2118,0.1732,0.2490,0.0640,0.0104,0.1235
+195,random_forest,A_engineered,RF-A (engineered),0.0000,blocked,6,10592,0.2648,0.2189,0.3129,0.2117,0.1679,0.2563,0.0000,0.0000,0.0000
+195,random_forest,A_engineered,RF-A (engineered),0.0000,loyo,29,10592,0.2650,0.2184,0.3131,0.2283,0.1870,0.2699,0.0000,0.0000,0.0000
+332,climatology,none,Climatology,,blocked,6,10592,0.0472,0.0129,0.0835,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+332,climatology,none,Climatology,,loyo,29,10592,0.0506,0.0172,0.0903,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+332,persistence,none,Persistence,,blocked,6,10592,0.1102,-0.0174,0.2582,0.3301,0.2666,0.3905,0.1728,0.0955,0.2432
+332,persistence,none,Persistence,,loyo,29,10592,0.1102,-0.0174,0.2582,0.3308,0.2650,0.3958,0.1720,0.0988,0.2393
+332,random_forest,A_engineered,RF-A (engineered),0.0000,blocked,6,10592,0.4265,0.3655,0.4993,0.3783,0.3178,0.4362,0.1138,0.0667,0.1550
+332,random_forest,A_engineered,RF-A (engineered),0.0000,loyo,29,10592,0.4304,0.3671,0.5045,0.3693,0.3051,0.4315,0.1250,0.0833,0.1573
+533,climatology,none,Climatology,,blocked,6,10592,0.7502,0.7224,0.7775,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+533,climatology,none,Climatology,,loyo,29,10592,0.7528,0.7257,0.7789,0.0000,0.0000,0.0000,0.0000,0.0000,0.0000
+533,persistence,none,Persistence,,blocked,6,10592,0.7973,0.7640,0.8277,0.3550,0.3079,0.4037,0.1429,0.0926,0.1945
+533,persistence,none,Persistence,,loyo,29,10592,0.7973,0.7640,0.8277,0.3672,0.3188,0.4174,0.1505,0.1034,0.2000
+533,random_forest,A_engineered,RF-A (engineered),0.0000,blocked,6,10592,0.8900,0.8689,0.9082,0.4453,0.3988,0.4951,0.1770,0.1048,0.2397
+533,random_forest,A_engineered,RF-A (engineered),0.0000,loyo,29,10592,0.8910,0.8700,0.9093,0.4590,0.4094,0.5098,0.1597,0.1031,0.2083

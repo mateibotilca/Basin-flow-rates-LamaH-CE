@@ -1,4 +1,5 @@
-"""Smoke test: build a small fake LamaH-CE folder and run the full CP1 pipeline on it.
+"""Smoke test: build a small fake LamaH-CE folder and run the full CP1 pipeline on it,
+then the CP2 pipeline (features, folds, baselines, metrics, figures) on its output.
 
 It checks that your Python environment works before you point the config at the
 real data. The fake files imitate the documented format (semicolon separator,
@@ -10,6 +11,7 @@ Usage:
 """
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import tempfile
@@ -90,7 +92,43 @@ def main() -> None:
         tgt = gaps[(gaps.series == "q_target")]
         assert (tgt.n_missing == 52).all(), tgt  # 40 isolated + 12 consecutive
         assert (tgt.longest_gap_days == 12).all(), tgt
+        print("CP1 smoke OK")
+        smoke_cp2(tmp, cfg_path)
         print("SMOKE TEST OK")
+
+
+def smoke_cp2(tmp: Path, basins_cfg_path: Path) -> None:
+    """Run the CP2 entry point on the fake processed tables (small RF to stay fast)."""
+    cfg = yaml.safe_load(open("configs/cp2.yaml", encoding="utf-8"))
+    cfg["basins_config"] = str(basins_cfg_path)
+    cfg["processed_dir"] = str(tmp / "processed")
+    cfg["results_dir"] = str(tmp / "results_cp2")
+    cfg["baselines"]["random_forest"]["n_estimators"] = 10
+    cfg["metrics"]["bootstrap"]["n_resamples"] = 100
+    cfg_path = tmp / "cfg_cp2.yaml"
+    yaml.safe_dump(cfg, open(cfg_path, "w", encoding="utf-8"), sort_keys=False)
+    for extra in ([], ["--folds", "loyo"]):
+        r = subprocess.run([sys.executable, "-m", "src.baselines.run_cp2", "--config", str(cfg_path), *extra],
+                           capture_output=True, text=True)
+        print(r.stdout[-1200:])
+        if r.returncode != 0:
+            print(r.stderr[-3000:])
+            raise SystemExit("SMOKE TEST FAILED (CP2)")
+    res = tmp / "results_cp2"
+    expected = ["folds.csv", "predictions.csv.gz", "metrics_by_fold.csv", "table_cp2_main.csv",
+                "table_cp2_main.md", "run_info.json", "SUMMARY.md", "fig_cp2_protocol.png",
+                "fig_cp2_protocol.pdf", "fig_cp2_skill.png", "fig_cp2_skill.pdf", "table_cp2_loyo.csv"]
+    missing = [f for f in expected if not (res / f).exists()]
+    if missing:
+        raise SystemExit(f"SMOKE TEST FAILED, missing CP2 outputs: {missing}")
+    tab = pd.read_csv(res / "table_cp2_main.csv")
+    assert len(tab) == 3 * 4, tab[["basin_id", "label"]]          # 3 basins x (2 baselines + 2 RF)
+    info = json.load(open(res / "run_info.json", encoding="utf-8"))
+    assert isinstance(info["git_dirty"], bool) or info["git_dirty"] is None, info.get("git_dirty")
+    assert (res / "metrics_pooled.csv").exists()
+    dropped = [v["n_dropped_nan_dev"] for v in info["samples_per_basin"].values()]
+    assert all(d > 0 for d in dropped), dropped                   # fake data has NaN target days
+    print("CP2 smoke OK")
 
 
 if __name__ == "__main__":

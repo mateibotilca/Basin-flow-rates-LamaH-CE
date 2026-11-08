@@ -1,0 +1,89 @@
+# CP2 configuration: representation + baselines + evaluation protocol.
+# Every CP2 decision lives here; the code reads it and does not hard-code any of it.
+# Basins, upstream gauges and the LamaH path come from configs/basins.yaml.
+
+basins_config: "configs/basins.yaml"
+processed_dir: "data/processed"
+results_dir: "results/cp2"
+
+# ----------------------------------------------------------------------------- forecast setup
+issue: "end of day t (24:00 UTC); inputs use days <= t only"
+lead_days: 2                    # target = q_target on day t+2  [m3/s]
+
+# ----------------------------------------------------------------------------- protocol
+# Hydrological year (HY) = 1 Oct .. 30 Sep, labelled by the year in which it ends.
+# A sample is assigned to a HY by the date of its TARGET (t+2).
+hydro_year_start_month: 10
+warmup:            {start: "1981-01-01", end: "1981-09-30"}   # inputs only, never a target
+development_hy:    [1982, 2010]   # 29 HY: cross-validation at CP2/CP3
+holdout_hy:        [2011, 2017]   # untouched until CP4 (unseen-case test)
+# Oct-Dec 2017 is an incomplete HY2018 and is not used as a target.
+
+# Blocked leave-years-out: each fold leaves out one block of consecutive HY.
+# Chosen over pure LOYO so that the CP3 LSTM (3 seeds) stays feasible on a laptop CPU;
+# all models (baselines, RF, LSTM) use exactly these folds.
+folds:
+  scheme: "blocked"             # "blocked" (main) or "loyo" (robustness check, RF only)
+  blocks:
+    - [1982, 1986]
+    - [1987, 1991]
+    - [1992, 1996]
+    - [1997, 2001]
+    - [2002, 2006]
+    - [2007, 2010]
+  # Training samples whose target date lies within `purge_days` before or after the test
+  # block are dropped: their input windows overlap test-period targets.
+  purge_days: 32                # >= longest input window (30 d) + lead (2 d)
+
+# ----------------------------------------------------------------------------- alert thresholds
+# Quantiles of q_target over the TRAINING targets of each fold (never the full record).
+threshold_quantiles: {Q95: 0.95, Q99: 0.99}
+
+# ----------------------------------------------------------------------------- representations
+# A = chosen representation (engineered antecedent-condition features, for RF).
+# B = comparison (raw lags of every dynamic series, same window for all, for RF).
+# C = alternative for CP3, documented here but NOT built at CP2: raw daily sequence of the
+#     last 365 days of all dynamic series + static attributes, fed to an LSTM (NeuralHydrology).
+representations:
+  A_engineered:
+    q_target:        {lags: [0, 1, 2, 3, 4, 5, 6], diffs: [1]}     # dq_1 = q(t) - q(t-1)
+    q_upstream:      {lags: [0, 1, 2]}                            # every q_up_<id> column
+    prec:            {lags: [0, 1, 2], sums: [3, 7, 30]}          # sums over days t-k+1 .. t
+    2m_temp_mean:    {lags: [0], means: [7]}
+    2m_temp_min:     {lags: [0]}
+    2m_temp_max:     {lags: [0]}
+    swe:             {lags: [0], diffs: [1, 3]}                   # snowmelt proxy
+    volsw_123:       {lags: [0]}
+    calendar:        [doy_sin, doy_cos]                           # of the issue date t
+  B_raw_lags:
+    all_dynamic:     {lags: [0, 1, 2, 3, 4, 5, 6]}                # q_target, q_up_*, 6 meteo
+    calendar:        [doy_sin, doy_cos]
+
+# ----------------------------------------------------------------------------- baselines
+baselines:
+  persistence: {}               # y_hat(t+2) = q_target(t)
+  climatology:
+    smooth_window_days: 31      # circular moving mean of the day-of-year mean, +/- 15 d
+    # day-of-year of the TARGET date; 29 Feb (doy 366) is mapped to doy 365
+  random_forest:
+    # Fixed a priori, no tuning at CP2.
+    n_estimators: 300
+    min_samples_leaf: 5
+    max_features: 0.33
+    n_jobs: -1
+    seeds: [0, 1, 2]
+    representations: [A_engineered, B_raw_lags]
+    one_model_per_basin: true
+
+# ----------------------------------------------------------------------------- metrics
+metrics:
+  continuous: [NSE, KGE, RMSE]
+  alert: [POD, FAR, CSI]        # day-based: alert = y_hat > thr, observed = y > thr
+  # POD = hits / (hits + misses); FAR = false alarms / (hits + false alarms)  (false alarm RATIO)
+  # CSI = hits / (hits + misses + false alarms). NaN (not 0) when the denominator is 0.
+  pooling: "concatenate the test predictions of all folds, then compute the metric once"
+  bootstrap:
+    unit: "hydrological year"   # resample whole HY with replacement (keeps autocorrelation)
+    n_resamples: 1000
+    ci: [0.05, 0.95]            # 90 % percentile interval
+    seed: 0

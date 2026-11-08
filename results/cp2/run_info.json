@@ -1,0 +1,295 @@
+{
+  "mode": "main",
+  "folds_scheme": "blocked",
+  "git_commit": "5dd9979d7ff7297759a982fc36f5cb3283d5d3af",
+  "git_dirty": true,
+  "config": {
+    "basins_config": "configs/basins.yaml",
+    "processed_dir": "data/processed",
+    "results_dir": "results/cp2",
+    "issue": "end of day t (24:00 UTC); inputs use days <= t only",
+    "lead_days": 2,
+    "hydro_year_start_month": 10,
+    "warmup": {
+      "start": "1981-01-01",
+      "end": "1981-09-30"
+    },
+    "development_hy": [
+      1982,
+      2010
+    ],
+    "holdout_hy": [
+      2011,
+      2017
+    ],
+    "folds": {
+      "scheme": "blocked",
+      "blocks": [
+        [
+          1982,
+          1986
+        ],
+        [
+          1987,
+          1991
+        ],
+        [
+          1992,
+          1996
+        ],
+        [
+          1997,
+          2001
+        ],
+        [
+          2002,
+          2006
+        ],
+        [
+          2007,
+          2010
+        ]
+      ],
+      "purge_days": 32
+    },
+    "threshold_quantiles": {
+      "Q95": 0.95,
+      "Q99": 0.99
+    },
+    "representations": {
+      "A_engineered": {
+        "q_target": {
+          "lags": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "diffs": [
+            1
+          ]
+        },
+        "q_upstream": {
+          "lags": [
+            0,
+            1,
+            2
+          ]
+        },
+        "prec": {
+          "lags": [
+            0,
+            1,
+            2
+          ],
+          "sums": [
+            3,
+            7,
+            30
+          ]
+        },
+        "2m_temp_mean": {
+          "lags": [
+            0
+          ],
+          "means": [
+            7
+          ]
+        },
+        "2m_temp_min": {
+          "lags": [
+            0
+          ]
+        },
+        "2m_temp_max": {
+          "lags": [
+            0
+          ]
+        },
+        "swe": {
+          "lags": [
+            0
+          ],
+          "diffs": [
+            1,
+            3
+          ]
+        },
+        "volsw_123": {
+          "lags": [
+            0
+          ]
+        },
+        "calendar": [
+          "doy_sin",
+          "doy_cos"
+        ]
+      },
+      "B_raw_lags": {
+        "all_dynamic": {
+          "lags": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        "calendar": [
+          "doy_sin",
+          "doy_cos"
+        ]
+      }
+    },
+    "baselines": {
+      "persistence": {},
+      "climatology": {
+        "smooth_window_days": 31
+      },
+      "random_forest": {
+        "n_estimators": 300,
+        "min_samples_leaf": 5,
+        "max_features": 0.33,
+        "n_jobs": -1,
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "representations": [
+          "A_engineered",
+          "B_raw_lags"
+        ],
+        "one_model_per_basin": true
+      }
+    },
+    "metrics": {
+      "continuous": [
+        "NSE",
+        "KGE",
+        "RMSE"
+      ],
+      "alert": [
+        "POD",
+        "FAR",
+        "CSI"
+      ],
+      "pooling": "concatenate the test predictions of all folds, then compute the metric once",
+      "bootstrap": {
+        "unit": "hydrological year",
+        "n_resamples": 1000,
+        "ci": [
+          0.05,
+          0.95
+        ],
+        "seed": 0
+      }
+    }
+  },
+  "basins": [
+    {
+      "id": 533,
+      "name": "Isel at Bruehl",
+      "regime": "alpine (nival-glacial)",
+      "upstream": [
+        530,
+        532
+      ]
+    },
+    {
+      "id": 332,
+      "name": "Traisen at Windpassing",
+      "regime": "hill (pluvio-nival)",
+      "upstream": [
+        328,
+        331
+      ]
+    },
+    {
+      "id": 195,
+      "name": "Aschach at Kropfmuehle",
+      "regime": "lowland (pluvial)",
+      "upstream": [
+        193,
+        194
+      ]
+    }
+  ],
+  "meteo_vars": [
+    "prec",
+    "2m_temp_mean",
+    "2m_temp_min",
+    "2m_temp_max",
+    "swe",
+    "volsw_123"
+  ],
+  "packages": {
+    "python": "3.10.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "matplotlib": "3.10.9",
+    "pyyaml": "6.0.3",
+    "platform": "macOS-26.6.2-arm64-arm-64bit"
+  },
+  "rf_seeds": [
+    0,
+    1,
+    2
+  ],
+  "representations_run": [
+    "A_engineered",
+    "B_raw_lags"
+  ],
+  "bootstrap_seed": 0,
+  "samples_per_basin": {
+    "533": {
+      "basin_id": 533,
+      "n_issue_days": 13514,
+      "n_target_outside_period": 365,
+      "n_target_in_warmup": 271,
+      "n_holdout_excluded": 2557,
+      "n_dropped_nan_dev": 0,
+      "n_dropped_nan_holdout": 0,
+      "n_samples": 10592,
+      "n_samples_dev": 10592
+    },
+    "332": {
+      "basin_id": 332,
+      "n_issue_days": 13514,
+      "n_target_outside_period": 365,
+      "n_target_in_warmup": 271,
+      "n_holdout_excluded": 2557,
+      "n_dropped_nan_dev": 0,
+      "n_dropped_nan_holdout": 0,
+      "n_samples": 10592,
+      "n_samples_dev": 10592
+    },
+    "195": {
+      "basin_id": 195,
+      "n_issue_days": 13514,
+      "n_target_outside_period": 365,
+      "n_target_in_warmup": 271,
+      "n_holdout_excluded": 2557,
+      "n_dropped_nan_dev": 0,
+      "n_dropped_nan_holdout": 0,
+      "n_samples": 10592,
+      "n_samples_dev": 10592
+    }
+  },
+  "runtime_s": {
+    "features": 0.08,
+    "baselines": 0.0,
+    "rf_A_engineered": 124.0,
+    "rf_B_raw_lags": 246.9,
+    "metrics_bootstrap": 0.18,
+    "write_tables": 2.51,
+    "figures": 0.76,
+    "total": 374.55
+  }
+}
